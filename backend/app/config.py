@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     APP_HOST: str = "127.0.0.1"
     APP_PORT: int = 8000
     SECRET_KEY: str = "dev-secret-key-change-in-production-123456789"
-    LOCAL_MASTER_PASSWORD: str = "admin123"  # Local personal master password
+    LOCAL_MASTER_PASSWORD: str = ""  # Must be set in .env
     FRONTEND_URL: str = "http://127.0.0.1:3000"
     TESSERACT_CMD: str = "tesseract"
     LIBREOFFICE_CMD: str = "soffice"

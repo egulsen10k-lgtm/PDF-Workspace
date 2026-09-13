@@ -18,7 +18,7 @@ class LoginResponse(BaseModel):
 
 @router.post("/login", response_model=LoginResponse)
 async def login(body: LoginRequest):
-    if body.password != settings.LOCAL_MASTER_PASSWORD:
+    if not settings.LOCAL_MASTER_PASSWORD or body.password != settings.LOCAL_MASTER_PASSWORD:
         raise HTTPException(status_code=401, detail="Invalid master password.")
 
     token = f"local-session-{secrets.token_urlsafe(24)}"
