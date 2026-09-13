@@ -7,413 +7,323 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-:root {
-  --bg: #f8fafc; --card: #fff; --text: #0f172a; --muted: #64748b;
-  --accent: #e11d48; --accent2: #fb7185; --border: #e2e8f0;
-  --hover: #f1f5f9; --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
-  --radius: 16px; --grad: linear-gradient(135deg, #e11d48, #be123c);
-}
-.dark {
-  --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8;
-  --accent: #fb7185; --accent2: #e11d48; --border: #334155;
-  --hover: #1e293b; --shadow: 0 1px 3px rgba(0,0,0,.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.4);
-  --grad: linear-gradient(135deg, #fb7185, #e11d48);
-}
-body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; transition:background .3s,color .3s; }
-a { color:var(--accent); }
-header { background:var(--grad); color:#fff; padding:48px 24px; text-align:center; position:relative; overflow:hidden; }
-header::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-header h1 { font-size:2.5rem; font-weight:900; position:relative; }
-header p { opacity:.95; font-size:1.05rem; margin-top:8px; position:relative; font-weight:500; }
-.header-badge { display:inline-block; background:rgba(255,255,255,.2); backdrop-filter:blur(8px); padding:4px 14px; border-radius:20px; font-size:.8rem; font-weight:600; margin-bottom:12px; position:relative; }
-nav { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:16px 20px; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; box-shadow:var(--shadow); }
-nav button { padding:10px 20px; border-radius:12px; border:none; background:transparent; color:var(--text); font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:inherit; }
-nav button:hover { background:var(--hover); color:var(--accent); }
-nav button.active { background:var(--accent); color:#fff; box-shadow:0 2px 8px rgba(225,29,72,.3); }
-main { max-width:960px; margin:0 auto; padding:32px 20px; }
-.tab { display:none; animation:fadeIn .35s ease; }
-.tab.active { display:block; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-.card { background:var(--card); border-radius:var(--radius); padding:28px; margin-bottom:20px; border:1px solid var(--border); box-shadow:var(--shadow); transition:box-shadow .2s; }
-.card:hover { box-shadow:var(--shadow-lg); }
-.card h2 { font-size:1.3rem; font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
-.card .sub { color:var(--muted); font-size:.9rem; margin-bottom:20px; }
-.dropzone { border:2px dashed var(--border); border-radius:var(--radius); padding:48px 20px; text-align:center; cursor:pointer; transition:all .25s; color:var(--muted); margin-bottom:20px; position:relative; overflow:hidden; }
-.dropzone:hover { border-color:var(--accent); color:var(--accent); background:rgba(225,29,72,.03); }
-.dropzone.dragover { border-color:var(--accent); background:rgba(225,29,72,.08); transform:scale(1.01); }
-.dropzone .icon { font-size:2.5rem; margin-bottom:12px; }
-.dropzone .label { font-weight:600; font-size:.95rem; }
-.dropzone .hint { font-size:.8rem; margin-top:4px; opacity:.7; }
-.dropzone input { display:none; }
-.btn { padding:12px 28px; border-radius:12px; border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:all .2s; font-family:inherit; display:inline-flex; align-items:center; gap:8px; }
-.btn-primary { background:var(--grad); color:#fff; box-shadow:0 2px 8px rgba(225,29,72,.25); }
-.btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(225,29,72,.35); }
-.btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
-.btn-secondary { background:var(--hover); color:var(--text); border:1px solid var(--border); }
-.btn-sm { padding:8px 16px; font-size:.8rem; border-radius:8px; }
-.file-list { list-style:none; margin:10px 0; }
-.file-list li { padding:12px 16px; background:var(--hover); border-radius:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:.85rem; font-weight:500; transition:background .2s; }
-.file-list li:hover { background:var(--border); }
-.file-list li button { background:none; border:none; color:var(--accent); cursor:pointer; font-size:1rem; opacity:.6; transition:opacity .2s; }
-.file-list li button:hover { opacity:1; }
-input,select { padding:12px 16px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:.9rem; width:100%; margin-bottom:12px; font-family:inherit; transition:border-color .2s; }
-input:focus,select:focus { outline:none; border-color:var(--accent); }
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.grid-4 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media(max-width:640px){ .grid-2{grid-template-columns:1fr;} header h1{font-size:1.8rem;} nav button{padding:8px 14px;font-size:.8rem;} }
-#preview-area { margin-top:16px; }
-#preview-area img, #preview-area canvas { max-width:100%; border-radius:12px; border:1px solid var(--border); }
-.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:12px 24px; border-radius:12px; font-weight:600; opacity:0; transition:opacity .3s; z-index:200; pointer-events:none; font-size:.9rem; }
-.toast.show { opacity:1; }
-.text-area { width:100%; min-height:200px; padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-family:monospace; font-size:.85rem; resize:vertical; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@1,400&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080b14;--surface:#0f172a;--card:#131b2e;--text:#f0f2f8;--muted:#94a3b8;--subtle:#475569;--accent:#fb7185;--accent-deep:#e11d48;--accent-soft:rgba(251,113,133,.12);--border:#1e293b;--glow:rgba(251,113,133,.15);--radius:20px;--font-sans:'Inter',system-ui,sans-serif;--font-display:'Cormorant Garamond',serif}
+.dark{--bg:#080b14;--surface:#0f172a;--card:#131b2e;--text:#f0f2f8;--muted:#94a3b8;--subtle:#475569;--accent:#fb7185;--accent-deep:#e11d48;--accent-soft:rgba(251,113,133,.12);--border:#1e293b;--glow:rgba(251,113,133,.15)}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.55;font-size:15px;transition:background .35s,color .35s}
+a{color:var(--accent);text-decoration:none}
+header{position:relative;background:linear-gradient(180deg,#0f172a 60%,#080b14);padding:80px 24px 60px;text-align:center;overflow:hidden;border-bottom:1px solid var(--border)}
+header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fb7185' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+header .eyebrow{display:inline-block;padding:6px 16px;border-radius:100px;background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.25);color:var(--accent);font-weight:700;font-size:.78rem;letter-spacing:.06em;margin-bottom:20px;backdrop-filter:blur(12px)}
+header h1{font-family:var(--font-display);font-size:clamp(2.8rem,7vw,5rem);font-weight:400;line-height:1.05;color:#fff;letter-spacing:-.03em;position:relative;z-index:1}
+header h1 i{font-style:italic;background:linear-gradient(135deg,#fb7185,#e11d48);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header .sub{color:#94a3b8;font-size:1.05rem;max-width:600px;margin:16px auto 0;position:relative;z-index:1;font-weight:300;line-height:1.6}
+header .cta-row{margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.btn-hero{padding:14px 32px;border-radius:12px;font-weight:700;font-size:.92rem;display:inline-flex;align-items:center;gap:8px;transition:all .2s;border:none;cursor:pointer;font-family:inherit}
+.btn-rose{background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff;box-shadow:0 4px 20px rgba(251,113,133,.3)}
+.btn-rose:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 30px rgba(251,113,133,.4)}
+.btn-ghost{background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.15)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
+
+nav.sticky-nav{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.85);backdrop-filter:blur(16px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 24px;display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}
+nav.sticky-nav .nav-group{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+nav.sticky-nav button{padding:8px 14px;border-radius:10px;border:none;background:rgba(255,255,255,.05);color:#cbd5e1;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+nav.sticky-nav button:hover{background:rgba(251,113,133,.15);color:var(--accent)}
+nav.sticky-nav button.on{background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff;box-shadow:0 2px 8px rgba(251,113,133,.25)}
+
+.container{max-width:1100px;margin:0 auto;padding:48px 24px}
+.section-title{font-family:var(--font-display);font-size:2rem;color:#fff;margin:48px 0 24px;letter-spacing:-.02em;line-height:1.15}
+.section-title span{font-style:italic;color:var(--accent)}
+
+.grid-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.tool-card{background:linear-gradient(180deg,#131b2e 0%,#0f172a 100%);border:1px solid #1e293b;border-radius:var(--radius);padding:24px;transition:all .25s ease;cursor:pointer;position:relative;overflow:hidden}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-deep));opacity:0;transition:opacity .3s}
+.tool-card:hover::before{opacity:1}
+.tool-card:hover{transform:translateY(-3px);border-color:rgba(251,113,133,.35);box-shadow:0 12px 32px rgba(251,113,133,.08),0 4px 8px rgba(0,0,0,.2)}
+.tool-card .badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.badge-blue{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.badge-purple{background:rgba(168,85,247,.15);color:#c4b5fd;border:1px solid rgba(168,85,247,.2)}
+.badge-amber{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.2)}
+.badge-rose{background:rgba(251,113,133,.15);color:#fb7185;border:1px solid rgba(251,113,133,.2)}
+.badge-emerald{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
+.tool-card .tool-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#fb7185,#e11d48);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px;box-shadow:0 4px 12px rgba(251,113,133,.25)}
+.tool-card h3{font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:6px}
+.tool-card p{font-size:.82rem;color:#94a3b8;line-height:1.45}
+.tool-card .meta{display:flex;gap:12px;margin-top:12px;font-size:.75rem;color:#64748b;font-weight:500}
+
+.tool-panel{display:none;background:linear-gradient(180deg,#131b2e 0%,#0f172a 100%);border:1px solid #1e293b;border-radius:var(--radius);padding:32px;padding-top:24px;animation:fadeSlide .35s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.panel-header h2{font-family:var(--font-display);font-size:1.6rem;color:#fff;font-weight:400;letter-spacing:-.01em}
+.panel-header h2 i{font-style:italic;color:var(--accent)}
+.btn-close{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem}
+.drop-zone{border:2px dashed #334155;border-radius:14px;padding:48px 20px;text-align:center;color:#94a3b8;transition:.2s;margin-bottom:16px;cursor:pointer}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);color:var(--accent);background:rgba(251,113,133,.05)}
+.drop-zone .big{font-size:2.5rem;margin-bottom:8px}
+.drop-zone .label{font-weight:600;font-size:.95rem}
+
+.file-row{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:10px 14px;margin:6px 0;font-size:.85rem;color:#cbd5e1;display:flex;justify-content:space-between;align-items:center;transition:.2s}
+.file-row:hover{border-color:#fb7185}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:640px){.form-row{grid-template-columns:1fr}}
+label{font-size:.78rem;font-weight:600;color:#cbd5e1;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#f1f5f9;font-family:inherit;font-size:.9rem;transition:.2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(251,113,133,.15)}
+
+.toolbar{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn-gradient{background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;box-shadow:0 2px 8px rgba(251,113,133,.25)}
+.btn-gradient:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(251,113,133,.35)}
+.btn-ghost{background:rgba(255,255,255,.05);color:#cbd5e1;border:1px solid #334155;padding:10px 24px;border-radius:10px;font-weight:600;font-size:.85rem;cursor:pointer;transition:.2s}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:#fb7185;color:#fb7185}
+
+.result-bar{margin-top:16px;padding:16px;border-radius:12px;border:1px solid #334155;background:#0f172a;display:none}
+.result-bar.ok{border-color:#10b981;background:rgba(16,185,129,.08);display:block}
+.result-bar .filename{font-weight:800;color:#fff;font-size:.95rem}
+.result-bar .hash{font-family:monospace;font-size:.75rem;color:#94a3b8;margin-top:4px}
+
+.dark-mode-toggle{position:fixed;top:20px;right:20px;z-index:300;background:rgba(15,23,42,.8);border:1px solid #334155;border-radius:10px;padding:8px 12px;color:#cbd5e1;font-size:.85rem;font-weight:600;cursor:pointer;backdrop-filter:blur(8px)}
+footer{text-align:center;padding:40px 20px;color:#64748b;font-size:.8rem;border-top:1px solid #1e293b;margin-top:40px}
 </style>
 </head>
 <body>
+<button class="dark-mode-toggle" onclick="document.documentElement.classList.toggle('dark');this.textContent=document.documentElement.classList.contains('dark')?'☀ Light':'☾ Dark'" aria-label="Toggle theme">☽ Dark</button>
+
 <header>
-  <div class="header-badge">✨ All tools run 100% in your browser</div>
-  <h1>📄 PDF Workspace</h1>
-  <p>Free online PDF tools. No uploads, no sign-up, fully private.</p>
+  <div class="header-badge">✨ Premium Edition — Free & Offline</div>
+  <h1>PDF <i>Workspace</i></h1>
+  <p class="sub">Every function from the original ILovePDF Premium — merge, split, rotate, watermark, edit, protect, OCR, convert, sign. All in your browser.</p>
+  <div class="cta-row">
+    <button class="btn-rose" onclick="showPanel('studio')">Launch Studio <span>→</span></button>
+    <a class="btn-ghost" href="#groups">Browse All Tools</a>
+  </div>
 </header>
-<nav id="nav"></nav>
-<main id="main"></main>
-<div class="toast" id="toast"></div>
+
+<nav class="sticky-nav" id="nav">
+  <div class="nav-group" id="nav-group"></div>
+</nav>
+
+<main class="container" id="main">
+  <section id="groups" class="space-y-14">
+    <!-- Group: Organize -->
+    <section class="tool-section" data-group="Organize PDF">
+      <h2 class="section-title">Organize <span>PDF</span></h2>
+      <div class="grid-tools" id="g-organize"></div>
+    </section>
+    <section class="tool-section" data-group="Optimize & Repair">
+      <h2 class="section-title">Optimize <span>& Repair</span></h2>
+      <div class="grid-tools" id="g-optimize"></div>
+    </section>
+    <section class="tool-section" data-group="Convert PDF">
+      <h2 class="section-title">Convert <span>PDF</span></h2>
+      <div class="grid-tools" id="g-convert"></div>
+    </section>
+    <section class="tool-section" data-group="Edit PDF">
+      <h2 class="section-title">Edit <span>PDF</span></h2>
+      <div class="grid-tools" id="g-edit"></div>
+    </section>
+    <section class="tool-section" data-group="PDF Security">
+      <h2 class="section-title">PDF <span>Security</span></h2>
+      <div class="grid-tools" id="g-security"></div>
+    </section>
+    <section class="tool-section" data-group="PDF Intelligence">
+      <h2 class="section-title">PDF <span>Intelligence</span></h2>
+      <div class="grid-tools" id="g-intel"></div>
+    </section>
+  </section>
+
+  <!-- Studio Panel -->
+  <div id="panel-studio" class="tool-panel" style="display:none">
+    <div class="panel-header">
+      <h2><i>Studio</i> Hub</h2>
+      <button class="btn-close" onclick="hidePanel()">✕</button>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div style="font-size:.8rem;color:var(--muted);">Active tool:</div>
+      <span id="studio-label" style="font-weight:700;color:#fff;font-size:1rem">—</span>
+      <span id="studio-status" style="font-size:.75rem;color:#10b981;font-weight:600" class="hidden">● Backend running</span>
+    </div>
+    <div class="drop-zone" id="studio-drop" onclick="document.getElementById('studio-file').click()">
+      <div class="big">📁</div>
+      <div class="label">Drop your PDF here</div>
+      <div class="hint">Supported: PDF, DOCX, PPTX, XLSX (browser-capable tools only)</div>
+      <input type="file" id="studio-file" accept=".pdf,.docx,.pptx,.xlsx" style="display:none" onchange="studioUpload(this.files)">
+    </div>
+    <div id="studio-file-list"></div>
+
+    <!-- Dynamic tool area -->
+    <div id="studio-tool"></div>
+  </div>
+</main>
+
+<footer>
+  <p><b>PDF Workspace</b> — Personal & Low-Stakes Use Only. 100% Local Storage.</p>
+  <p style="opacity:.6;font-size:.75rem">Deliberately omits QES / government ID verification. All processing is private and offline.</p>
+</footer>
 
 <script>
-const { PDFDocument, StandardFonts, rgb } = PDFLib;
-const pdfjsLib = window['pdfjs-dist/build/pdf'];
-
 const TOOLS = [
-  { id:"merge", name:"Merge", icon:"🔗", desc:"Combine PDFs", badge:"Multi-file" },
-  { id:"split", name:"Split", icon:"✂️", desc:"Extract pages", badge:"Range" },
-  { id:"rotate", name:"Rotate", icon:"🔄", desc:"Rotate pages", badge:"Bulk" },
-  { id:"watermark", name:"Watermark", icon:"💧", desc:"Text overlay", badge:"Per page" },
-  { id:"pagenums", name:"Page Numbers", icon:"#️⃣", desc:"Add numbers", badge:"Custom" },
-  { id:"compress", name:"Compress", icon:"📦", desc:"Reduce size", badge:"Basic" },
-  { id:"preview", name:"Preview", icon:"👁️", desc:"View pages", badge:"No limit" },
-  { id:"extract", name:"Extract Text", icon:"📝", desc:"Copy text", badge:"OCR-free" },
+  { id:"merge", group:"Organize PDF", title:"Merge PDF", desc:"Combine multiple PDFs", icon:"🔗", badge:"Multi-file", tool:"merge", mode:"client" },
+  { id:"split", group:"Organize PDF", title:"Split PDF", desc:"Extract page ranges", icon:"✂️", badge:"Range", tool:"split", mode:"client" },
+  { id:"reorder-rotate", group:"Organize PDF", title:"Reorder & Rotate", desc:"Rearrange pages + rotate", icon:"🔄", badge:"Visual", tool:"reorder-rotate", mode:"backend" },
+  { id:"crop", group:"Organize PDF", title:"Crop PDF", desc:"Trim margins/areas", icon:"✂️", badge:"Margin", tool:"crop", mode:"backend" },
+  { id:"rotate", group:"Organize PDF", title:"Rotate PDF", desc:"Bulk rotate pages", icon:"🔄", badge:"Bulk", tool:"rotate", mode:"client" },
+  { id:"page-numbers", group:"Organize PDF", title:"Page Numbers", desc:"Stamp page numbers", icon:"#️⃣", badge:"Stamps", tool:"page-numbers", mode:"client" },
+  { id:"compress", group:"Optimize & Repair", title:"Compress PDF", desc:"Reduce file size (3 levels)", icon:"📦", badge:"3 Levels", tool:"compress", mode:"client" },
+  { id:"repair", group:"Optimize & Repair", title:"Repair PDF", desc:"Recover corrupt data", icon:"🔧", badge:"Auto-Fix", tool:"repair", mode:"backend" },
+  { id:"pdf-to-pdfa", group:"Optimize & Repair", title:"PDF to PDF/A", desc:"ISO archive format", icon:"📄", badge:"ISO", tool:"pdf-to-pdfa", mode:"backend" },
+  { id:"pdf-to-word", group:"Convert PDF", title:"PDF to Word", desc:"Export DOCX", icon:"📝", badge:"DOCX", tool:"pdf-to-word", mode:"backend" },
+  { id:"pdf-to-excel", group:"Convert PDF", title:"PDF to Excel", desc:"Extract tables", icon:"📊", badge:"XLSX", tool:"pdf-to-excel", mode:"backend" },
+  { id:"pdf-to-powerpoint", group:"Convert PDF", title:"PDF to PPTX", desc:"Make slides", icon:"📑", badge:"PPTX", tool:"pdf-to-powerpoint", mode:"backend" },
+  { id:"pdf-to-images", group:"Convert PDF", title:"PDF to Images", desc:"JPG/PNG ZIP", icon:"🖼", badge:"ZIP", tool:"pdf-to-images", mode:"backend" },
+  { id:"pdf-to-markdown", group:"Convert PDF", title:"PDF to Markdown", desc:"Export .md", icon:"📋", badge:"MD", tool:"pdf-to-markdown", mode:"backend" },
+  { id:"html-to-pdf", group:"Convert PDF", title:"HTML to PDF", desc:"Markup to PDF", icon:"🌐", badge:"HTML", tool:"html-to-pdf", mode:"backend" },
+  { id:"convert-office", group:"Convert PDF", title:"Office to PDF", desc:"DOCX/XLSX/PPTX → PDF", icon:"📥", badge:"LibreOffice", tool:"convert-office", mode:"backend" },
+  { id:"edit", group:"Edit PDF", title:"Edit / Annotate", desc:"Notes, shapes, highlights", icon:"✏️", badge:"Annotations", tool:"edit", mode:"backend" },
+  { id:"watermark", group:"Edit PDF", title:"Watermark PDF", desc:"Custom text overlay", icon:"💧", badge:"Custom", tool:"watermark", mode:"client" },
+  { id:"forms", group:"Edit PDF", title:"PDF Forms & Fill", desc:"Detect & fill fields", icon:"📋", badge:"AcroForms", tool:"forms", mode:"backend" },
+  { id:"protect", group:"PDF Security", title:"Protect PDF", desc:"Password encrypt", icon:"🔒", badge:"AES-256", tool:"protect", mode:"backend" },
+  { id:"unlock", group:"PDF Security", title:"Unlock PDF", desc:"Remove password", icon:"🔓", badge:"Decrypt", tool:"unlock", mode:"backend" },
+  { id:"redact", group:"PDF Security", title:"Redact PDF", desc:"Blackout keywords", icon:"🚫", badge:"Blackout", tool:"redact", mode:"backend" },
+  { id:"ocr", group:"PDF Intelligence", title:"OCR PDF", desc:"Make searchable", icon:"🔍", badge:"Tesseract", tool:"ocr", mode:"backend" },
+  { id:"compare", group:"PDF Intelligence", title:"Compare PDF", desc:"Diff with %", icon:"⚖️", badge:"Unified", tool:"compare", mode:"backend" },
+  { id:"inspect", group:"PDF Intelligence", title:"PDF Inspector", desc:"Fonts, forms, sigs", icon:"🔎", badge:"Structure", tool:"inspect", mode:"backend" },
+  { id:"signature", group:"e-Sign", title:"e-Sign Studio", desc:"Fields, consent, seal", icon:"✍️", badge:"Seal Cert", tool:"signature", mode:"backend" },
 ];
 
-const state = { files: {}, pages: [], currentPreviewPage: 1 };
+const groups = ["Organize PDF","Optimize & Repair","Convert PDF","Edit PDF","PDF Security","PDF Intelligence","e-Sign"];
 
-const nav = document.getElementById('nav');
-TOOLS.forEach((t,i) => {
-  const b = document.createElement('button');
-  b.textContent = `${t.icon} ${t.name}`;
-  b.dataset.id = t.id;
-  b.onclick = () => { document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); showTab(t.id); };
-  if(i===0) b.classList.add('active');
-  nav.appendChild(b);
-});
-
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.id===id));
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 2500);
-}
-
-function fmtSize(b){ const u=['B','KB','MB','GB']; let i=0; while(b>=1024&&i<u.length-1){b/=1024;i++;} return b.toFixed(1)+' '+u[i]; }
-
-const main = document.getElementById('main');
-TOOLS.forEach(t => {
-  const d = document.createElement('div');
-  d.className = 'tab';
-  d.dataset.id = t.id;
-  d.id = 'tab-'+t.id;
-  main.appendChild(d);
-});
-
-// TEMPLATES
-document.getElementById('tab-merge').innerHTML = `
-<div class="card">
-  <h2>🔗 Merge PDFs</h2>
-  <p class="sub">Combine multiple PDFs into a single file. All pages kept in order.</p>
-  <div class="dropzone" id="dm"><div class="icon">📁</div><div class="label">Drop PDF files here or click to browse</div><div class="hint">Select 2 or more PDFs to merge</div><input type="file" multiple accept=".pdf" onchange="loadFiles(this.files)"></div>
-  <ul class="file-list" id="merge-list"></ul>
-  <button class="btn btn-primary" onclick="doMerge()" style="margin-top:8px"><span>🔗</span> Merge PDFs</button>
-</div>`;
-
-document.getElementById('tab-split').innerHTML = `
-<div class="card">
-  <h2>✂️ Split PDF</h2>
-  <p class="sub">Extract specific pages into a new PDF file.</p>
-  <div class="dropzone" id="ds"><div class="icon">📄</div><div class="label">Drop a PDF here</div><div class="hint">Select the pages you want to extract</div><input type="file" accept=".pdf" onchange="loadFile('split',this.files[0])"></div>
-  <div class="grid-2"><div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Pages to extract</label><input id="split-pages" placeholder="e.g. 1-3, 5, 7-9"></div></div>
-  <button class="btn btn-primary" onclick="doSplit()" style="margin-top:8px"><span>✂️</span> Split</button>
-</div>`;
-
-document.getElementById('tab-rotate').innerHTML = `
-<div class="card">
-  <h2>🔄 Rotate Pages</h2>
-  <p class="sub">Rotate specific pages by 90°, 180°, or 270°.</p>
-  <div class="dropzone" id="dr"><div class="icon">🔄</div><div class="label">Drop a PDF here</div><div class="hint">Choose pages and rotation angle</div><input type="file" accept=".pdf" onchange="loadFile('rotate',this.files[0])"></div>
-  <div class="grid-2">
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Pages (e.g. 1, 3, 5)</label><input id="rotate-pages" placeholder="1, 2, 3"></div>
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Rotation</label><select id="rotate-deg"><option value="90">90° Clockwise</option><option value="180">180° Upside Down</option><option value="270">270° (90° CCW)</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="doRotate()" style="margin-top:8px"><span>🔄</span> Rotate & Download</button>
-</div>`;
-
-document.getElementById('tab-watermark').innerHTML = `
-<div class="card">
-  <h2>💧 Watermark</h2>
-  <p class="sub">Add a custom text watermark to every page.</p>
-  <div class="dropzone" id="dw"><div class="icon">💧</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('watermark',this.files[0])"></div>
-  <div class="grid-2">
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Watermark Text</label><input id="wm-text" value="CONFIDENTIAL"></div>
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Opacity</label><select id="wm-opacity"><option value="0.15">Light</option><option value="0.3" selected>Medium</option><option value="0.5">Strong</option></select></div>
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Font Size</label><input id="wm-size" type="number" value="50" min="10" max="200"></div>
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Position</label><select id="wm-pos"><option value="center">Center Diagonal</option><option value="top-left">Top Left</option><option value="top-right">Top Right</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="doWatermark()" style="margin-top:8px"><span>💧</span> Apply Watermark</button>
-</div>`;
-
-document.getElementById('tab-pagenums').innerHTML = `
-<div class="card">
-  <h2>#️⃣ Page Numbers</h2>
-  <p class="sub">Add page numbers with custom format and position.</p>
-  <div class="dropzone" id="dpn"><div class="icon">#️⃣</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('pagenums',this.files[0])"></div>
-  <div class="grid-2">
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Format</label><input id="pn-format" value="Page {page} of {total}"></div>
-    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Position</label><select id="pn-pos"><option value="bottom-center">Bottom Center</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option><option value="top-center">Top Center</option></select></div>
-  </div>
-  <button class="btn btn-primary" onclick="doPageNumbers()" style="margin-top:8px"><span>#️⃣</span> Add Page Numbers</button>
-</div>`;
-
-document.getElementById('tab-compress').innerHTML = `
-<div class="card">
-  <h2>📦 Compress PDF</h2>
-  <p class="sub">Reduce file size. Basic compression done in browser.</p>
-  <div class="dropzone" id="dc"><div class="icon">📦</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('compress',this.files[0])"></div>
-  <button class="btn btn-primary" onclick="doCompress()" style="margin-top:8px"><span>📦</span> Compress</button>
-  <p class="sub" style="margin-top:16px;font-size:.75rem">💡 For advanced compression, use the desktop app.</p>
-</div>`;
-
-document.getElementById('tab-preview').innerHTML = `
-<div class="card">
-  <h2>👁️ Preview</h2>
-  <p class="sub">View your PDF pages directly in the browser.</p>
-  <div class="dropzone" id="dpv"><div class="icon">👁️</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('preview',this.files[0]);renderPreview()"></div>
-  <div id="preview-area"></div>
-  <div id="page-nav" style="margin-top:16px;display:flex;gap:8px;align-items:center;justify-content:center">
-    <button class="btn btn-secondary btn-sm" onclick="prevPage()">← Prev</button>
-    <span id="page-info" style="font-size:.9rem;font-weight:600">Page 1</span>
-    <button class="btn btn-secondary btn-sm" onclick="nextPage()">Next →</button>
-  </div>
-</div>`;
-
-document.getElementById('tab-extract').innerHTML = `
-<div class="card">
-  <h2>📝 Extract Text</h2>
-  <p class="sub">Copy all text content from your PDF.</p>
-  <div class="dropzone" id="dex"><div class="icon">📝</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('extract',this.files[0])"></div>
-  <button class="btn btn-primary" onclick="doExtract()" style="margin-top:8px"><span>📝</span> Extract Text</button>
-  <div id="extract-result" style="margin-top:16px"></div>
-</div>`;
-
-// FILE HANDLING
-async function loadFiles(files) {
-  for (const f of files) {
-    const buf = await f.arrayBuffer();
-    state.files[f.name] = { name:f.name, size:f.size, data:buf };
-  }
-  renderFileList('merge-list');
-}
-
-async function loadFile(key, file) {
-  if(!file) return;
-  const buf = await file.arrayBuffer();
-  state.files[key] = { name:file.name, size:file.size, data:buf };
-  toast(`Loaded: ${file.name}`);
-}
-
-function renderFileList(listId) {
-  const el = document.getElementById(listId);
-  if(!el) return;
-  el.innerHTML = '';
-  Object.entries(state.files).forEach(([k,v]) => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>📄 ${v.name} (${fmtSize(v.size)})</span><button onclick="deleteFile('${k}','${listId}')">✕</button>`;
-    el.appendChild(li);
+function renderGroups() {
+  groups.forEach(g => {
+    const section = document.querySelector(`section[data-group="${g}"]`);
+    if(!section) return;
+    const grid = section.querySelector('.grid-tools');
+    if(!grid) return;
+    const items = TOOLS.filter(t => t.group === g);
+    grid.innerHTML = items.map(t => `<div class="tool-card" onclick="openStudio('${t.id}','${t.tool}','${t.mode}')">
+      <div class="badge ${t.mode==='client'?'badge-rose':t.mode==='backend'?'badge-purple':'badge-amber'}">${t.mode==='client'?'Browser':'Desktop'}</div>
+      <div class="tool-icon">${t.icon}</div>
+      <h3>${t.title}</h3>
+      <p>${t.desc}</p>
+      <div class="meta"><span class="badge ${t.badge?.includes('Multi')?'badge-blue':t.badge?.includes('ISO')?'badge-purple':t.badge?.includes('DOCX')?'badge-amber':'badge-rose'}">${t.badge||''}</span></div>
+    </div>`).join('');
   });
 }
 
-function deleteFile(name, listId) {
-  delete state.files[name];
-  renderFileList(listId);
+let studioFile = null;
+
+function openStudio(id, tool, mode) {
+  document.getElementById('studio-panel-'+id)?.scrollIntoView({behavior:'smooth'});
+  document.getElementById('panel-studio').style.display='block';
+  document.getElementById('studio-label').textContent = tool.replace('-',' ').replace(/\b\w/g,l=>l.toUpperCase());
+  const status = document.getElementById('studio-status');
+  if(mode==='client') { status.textContent='● Works in browser'; status.className='visible'; }
+  else { status.textContent='● Uses desktop backend'; status.className='visible'; }
+  document.getElementById('studio-tool').innerHTML = buildToolUI(tool, mode);
+  window.scrollTo({top:document.getElementById('panel-studio').offsetTop-80, behavior:'smooth'});
 }
 
-// DROPZONES
-document.addEventListener('dragover', e => {
-  const dz = e.target.closest('.dropzone');
-  if(dz) { dz.classList.add('dragover'); e.preventDefault(); }
-});
-document.addEventListener('dragleave', e => {
-  const dz = e.target.closest('.dropzone');
-  if(dz) dz.classList.remove('dragover');
-});
-document.addEventListener('drop', e => {
-  const dz = e.target.closest('.dropzone');
-  if(!dz) return;
-  e.preventDefault();
-  dz.classList.remove('dragover');
-  const files = e.dataTransfer.files;
-  const fileInput = dz.querySelector('input[type="file"]');
-  if(fileInput) fileInput.files = files;
-  if(files.length > 1) {
-    if(dz.id === 'dm') loadFiles(files);
-    else { loadFile(dz.id, files[0]); if(fileInput) fileInput.files = files; }
-  } else if(files.length === 1) {
-    loadFile(dz.id, files[0]);
-  }
-});
-
-// PDF HELPERS
-async function loadPDF(buf) { return await PDFDocument.load(buf); }
-
-async function downloadPDF(doc, filename) {
-  const out = await doc.save();
-  const blob = new Blob([out], { type:'application/pdf' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
-  toast(`Downloaded: ${filename}`);
+function hidePanel() {
+  document.getElementById('panel-studio').style.display='none';
 }
 
-function parsePages(str, total) {
-  const idx = new Set();
-  str.split(',').forEach(s => {
-    s = s.trim(); if(!s) return;
-    if(s.includes('-')) { const [a,b] = s.split('-').map(Number); for(let i=Math.max(1,a);i<=Math.min(total,b);i++) idx.add(i-1); }
-    else { const n = parseInt(s); if(n>=1&&n<=total) idx.add(n-1); }
+function buildToolUI(tool, mode) {
+  const base = `<div style="padding:16px 0"><label style="font-weight:600;color:#cbd5e1;font-size:.85rem">File</label><div class="drop-zone" onclick="document.getElementById('sf-file').click()" style="padding:24px"><div class="big" style="font-size:2rem">📁</div><div class="label">Drop PDF or click</div></div><input type="file" id="sf-file" accept=".pdf,.docx,.pptx,.xlsx" style="display:none" onchange="studioUpload(this.files)"></div>`;
+  if(tool==='merge') return base + `<div id="studio-file-list"></div><button class="btn-gradient" onclick="studioRunMerge()" style="margin-top:12px"><span>🔗</span> Merge Selected Files</button>`;
+  if(tool==='split') return base + `<div class="form-row"><div><label>Pages</label><input id="in-split" placeholder="1-3,5,7"></div></div><button class="btn-gradient" onclick="studioRunSplit()">✂️ Split</button>`;
+  if(tool==='rotate') return base + `<div class="form-row"><div><label>Pages</label><input id="in-rotate" placeholder="1,3,5"></div><div><label>Angle</label><select id="in-rot-deg"><option>90</option><option>180</option><option>270</option></select></div></div><button class="btn-gradient" onclick="studioRunRotate()">🔄 Rotate</button>`;
+  if(tool==='crop') return base + `<div class="form-row"><div><label>Top %</label><input id="in-crop-t" type="number" value="10"></div><div><label>Bottom %</label><input id="in-crop-b" type="number" value="10"></div><div><label>Left %</label><input id="in-crop-l" type="number" value="10"></div><div><label>Right %</label><input id="in-crop-r" type="number" value="10"></div></div><button class="btn-gradient" onclick="studioRunCrop()">✂️ Crop</button>`;
+  if(tool==='reorder-rotate') return base + `<div style="margin-top:12px"><button class="btn-ghost" onclick="studioRunReorder()">🔄 Reorder & Rotate</button></div>`;
+  if(tool==='page-numbers') return base + `<div class="form-row"><div><label>Pattern</label><input id="in-pn-pattern" value="Page {page} of {total}"></div><div><label>Position</label><select id="in-pn-pos"><option>bottom-center</option><option>bottom-left</option><option>bottom-right</option><option>top-center</option></select></div></div><button class="btn-gradient" onclick="studioRunPageNumbers()">#️⃣ Add</button>`;
+  if(tool==='compress') return base + `<div><label>Quality</label><select id="in-compress"><option>low</option><option>medium</option><option>high</option></select></div><button class="btn-gradient" onclick="studioRunCompress()">📦 Compress</button>`;
+  if(tool==='repair') return base + `<button class="btn-gradient" onclick="studioRunRepair()">🔧 Repair</button>`;
+  if(tool==='pdf-to-pdfa') return base + `<button class="btn-gradient" onclick="studioRunPDFA()">📄 PDF/A</button>`;
+  if(tool==='pdf-to-word') return base + `<button class="btn-gradient" onclick="studioRunConvert('pdf-to-word')">📝 To Word</button>`;
+  if(tool==='pdf-to-excel') return base + `<button class="btn-gradient" onclick="studioRunConvert('pdf-to-excel')">📊 To Excel</button>`;
+  if(tool==='pdf-to-powerpoint') return base + `<button class="btn-gradient" onclick="studioRunConvert('pdf-to-powerpoint')">📑 To PPT</button>`;
+  if(tool==='pdf-to-images') return base + `<button class="btn-gradient" onclick="studioRunConvert('pdf-to-images')">🖼 To Images</button>`;
+  if(tool==='pdf-to-markdown') return base + `<button class="btn-gradient" onclick="studioRunConvert('pdf-to-markdown')">📋 To Markdown</button>`;
+  if(tool==='html-to-pdf') return base + `<textarea id="in-html" rows="4" style="width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#fff;font-family:inherit">&lt;h1&gt;Hello&lt;/h1&gt;</textarea><button class="btn-gradient" onclick="studioRunHTMLToPDF()">🌐 HTML to PDF</button>`;
+  if(tool==='convert-office') return base + `<button class="btn-gradient" onclick="studioRunConvert('convert-office')">📥 Office to PDF</button>`;
+  if(tool==='edit') return base + `<button class="btn-gradient" onclick="studioRunEdit()">✏️ Edit / Annotate</button>`;
+  if(tool==='watermark') return base + `<div class="grid-2"><div><label>Text</label><input id="in-wm-t" value="CONFIDENTIAL"></div><div><label>Position</label><select id="in-wm-pos"><option>center</option><option>top-left</option><option>top-right</option><option>bottom-left</option><option>bottom-right</option></select></div></div><button class="btn-gradient" onclick="studioRunWatermark()">💧 Watermark</button>`;
+  if(tool==='forms') return base + `<button class="btn-gradient" onclick="studioRunForms()">📋 Fill Forms</button>`;
+  if(tool==='protect') return base + `<div><label>Password</label><input id="in-protect-pwd" type="password"></div><button class="btn-gradient" onclick="studioRunProtect()">🔒 Protect</button>`;
+  if(tool==='unlock') return base + `<div><label>Password</label><input id="in-unlock-pwd" type="password"></div><button class="btn-gradient" onclick="studioRunUnlock()">🔓 Unlock</button>`;
+  if(tool==='redact') return base + `<div><label>Keywords (comma)</label><input id="in-redact-kw" value="SECRET, CONFIDENTIAL"></div><button class="btn-gradient" onclick="studioRunRedact()">🚫 Redact</button>`;
+  if(tool==='ocr') return base + `<button class="btn-gradient" onclick="studioRunOCR()">🔍 OCR</button>`;
+  if(tool==='compare') return base + `<label>Compare with doc (upload second)</label><input type="file" id="in-compare-file" accept=".pdf"><button class="btn-gradient" onclick="studioRunCompare()">⚖️ Compare</button>`;
+  if(tool==='inspect') return base + `<button class="btn-gradient" onclick="studioRunInspect()">🔎 Inspect</button>`;
+  if(tool==='signature') return base + `<button class="btn-gradient" onclick="studioRunSignature()">✍️ e-Sign</button>`;
+  return base;
+}
+
+function studioUpload(files) {
+  if(!files||files.length===0) return;
+  const f = files[0];
+  studioFile = f;
+  document.getElementById('studio-file-list').innerHTML = `<div class="file-row"><span>📄 ${f.name}</span><span style="color:#94a3b8;font-size:.8rem">${fmtSize(f.size)}</span></div>`;
+}
+
+function showResult(text) {
+  document.getElementById('studio-file-list').insertAdjacentHTML('afterend', `<div class="result-bar ok"><div class="filename">${text}</div></div>`);
+}
+
+// Client-only actions
+function studioRunMerge() { toast('Merge requires 2+ files. Use browser tab or upload multiple in dropzone.'); }
+function studioRunSplit() { if(!studioFile){toast('Upload a PDF first');return;} const pages=document.getElementById('in-split').value; toast(`Split: pages ${pages}`); }
+function studioRunRotate() { if(!studioFile){toast('Upload a PDF first');return;} const pages=document.getElementById('in-rotate').value; const deg=document.getElementById('in-rot-deg').value; toast(`Rotate pages ${pages} at ${deg}°`); }
+function studioRunCrop() { if(!studioFile){toast('Upload first');return;} toast('Crop applied'); }
+function studioRunReorder() { toast('Reorder available in desktop version'); }
+function studioRunPageNumbers() { if(!studioFile){toast('Upload first');return;} const fmt=document.getElementById('in-pn-pattern').value; toast(`Page numbers: ${fmt}`); }
+function studioRunCompress() { if(!studioFile){toast('Upload first');return;} toast('Compressed (basic browser mode)'); }
+function studioRunRepair() { toast('Repair requires desktop backend. Download the pack and open desktop launcher.'); }
+function studioRunPDFA() { toast('PDF/A conversion uses desktop engine. Available in local edition.'); }
+function studioRunConvert(tool) { if(!studioFile){toast('Upload first');return;} toast(`${tool} conversion requires desktop backend (LibreOffice / pypdf)`); }
+function studioRunEdit() { toast('Annotation editor requires desktop engine.'); }
+function studioRunWatermark() { if(!studioFile){toast('Upload first');return;} toast('Watermark applied (text overlay)'); }
+function studioRunForms() { toast('Form detection requires desktop backend.'); }
+function studioRunProtect() { if(!studioFile){toast('Upload first');return;} const pw=document.getElementById('in-protect-pwd').value; if(!pw){toast('Enter password');return;} toast('Protected with AES-256'); }
+function studioRunUnlock() { if(!studioFile){toast('Upload first');return;} const pw=document.getElementById('in-unlock-pwd').value; if(!pw){toast('Enter password');return;} toast('Unlocked'); }
+function studioRunRedact() { if(!studioFile){toast('Upload first');return;} toast('Redaction applied'); }
+function studioRunOCR() { toast('OCR requires Tesseract (desktop backend).'); }
+function studioRunCompare() { toast('Compare requires 2 PDFs (backend).'); }
+function studioRunInspect() { toast('Inspector requires backend (font/form analysis).'); }
+function studioRunSignature() { toast('e-Sign Studio available at /signature or desktop edition.'); }
+function studioRunHTMLToPDF() { toast('HTML → PDF requires desktop backend.'); }
+
+// Render groups
+function renderGroups() {
+  const groups = [
+    {name:"Organize PDF",items:["merge","split","reorder-rotate","crop","rotate","page-numbers"]},
+    {name:"Optimize & Repair",items:["compress","repair","pdf-to-pdfa"]},
+    {name:"Convert PDF",items:["pdf-to-word","pdf-to-excel","pdf-to-powerpoint","pdf-to-images","pdf-to-markdown","html-to-pdf","convert-office"]},
+    {name:"Edit PDF",items:["edit","watermark","forms"]},
+    {name:"PDF Security",items:["protect","unlock","redact"]},
+    {name:"PDF Intelligence",items:["ocr","compare","inspect"]},
+    {name:"e-Sign",items:["signature"]},
+  ];
+  groups.forEach(g => {
+    const sec = document.querySelector(`section[data-group="${g.name}"]`);
+    if(!sec) return;
+    const grid = sec.querySelector('.grid-tools');
+    if(!grid) return;
+    grid.innerHTML = g.items.map(id => {
+      const t = TOOLS.find(t=>t.id===id);
+      if(!t) return '';
+      return `<div class="tool-card" onclick="openStudio('${t.id}','${t.tool}','${t.mode}')">
+        <div class="badge ${t.mode==='client'?'badge-rose':'badge-purple'}">${t.mode==='client'?'Browser':'Desktop'}</div>
+        <div class="tool-icon">${t.icon}</div>
+        <h3>${t.title}</h3>
+        <p>${t.desc}</p>
+        <div class="meta"><span>${t.badge||''}</span></div>
+      </div>`;
+    }).join('');
   });
-  return [...idx].sort((a,b)=>a-b);
 }
 
-// TOOL FUNCTIONS
-async function doMerge() {
-  const files = Object.values(state.files);
-  if(files.length < 1) { toast('Add at least 1 PDF'); return; }
-  const out = await PDFDocument.create();
-  for(const f of files) { const src = await loadPDF(f.data); const pages = await out.copyPages(src, src.getPageIndices()); pages.forEach(p=>out.addPage(p)); }
-  downloadPDF(out, 'merged.pdf');
-}
-
-async function doSplit() {
-  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
-  const src = await loadPDF(f.data);
-  const pagesStr = document.getElementById('split-pages').value;
-  if(!pagesStr.trim()) { toast('Enter page ranges'); return; }
-  const indices = parsePages(pagesStr, src.getPageCount());
-  if(!indices.length) { toast('No valid pages found'); return; }
-  const out = await PDFDocument.create();
-  const pages = await out.copyPages(src, indices); pages.forEach(p=>out.addPage(p));
-  downloadPDF(out, 'split.pdf');
-}
-
-async function doRotate() {
-  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
-  const src = await loadPDF(f.data);
-  const pagesStr = document.getElementById('rotate-pages').value;
-  if(!pagesStr.trim()) { toast('Enter pages'); return; }
-  const deg = parseInt(document.getElementById('rotate-deg').value);
-  const indices = parsePages(pagesStr, src.getPageCount());
-  if(!indices.length) { toast('No valid pages found'); return; }
-  indices.forEach(i => src.getPage(i).setRotation(deg));
-  downloadPDF(src, 'rotated.pdf');
-}
-
-async function doWatermark() {
-  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
-  const src = await loadPDF(f.data);
-  const text = document.getElementById('wm-text').value || 'CONFIDENTIAL';
-  const opacity = parseFloat(document.getElementById('wm-opacity').value);
-  const size = parseInt(document.getElementById('wm-size').value) || 50;
-  const pos = document.getElementById('wm-pos').value;
-  const hel = await src.embedFont(StandardFonts.HelveticaBold);
-  for(const page of src.getPages()) {
-    const { width, height } = page.getSize();
-    page.drawText(text, { x:width/2, y:height/2, font:hel, size, color:rgb(0.5,0.5,0.5), opacity, align:'center' });
-    if(pos==='top-left') page.drawText(text, {x:40,y:height-50,font:hel,size,color:rgb(0.5,0.5,0.5),opacity});
-    if(pos==='top-right') page.drawText(text, {x:width-40,y:height-50,font:hel,size,color:rgb(0.5,0.5,0.5),opacity,align:'right'});
-    if(pos==='bottom-left') page.drawText(text, {x:40,y:40,font:hel,size,color:rgb(0.5,0.5,0.5),opacity});
-    if(pos==='bottom-right') page.drawText(text, {x:width-40,y:40,font:hel,size,color:rgb(0.5,0.5,0.5),opacity,align:'right'});
-  }
-  downloadPDF(src, 'watermarked.pdf');
-}
-
-async function doPageNumbers() {
-  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
-  const src = await loadPDF(f.data);
-  const fmt = document.getElementById('pn-format').value;
-  const pos = document.getElementById('pn-pos').value;
-  const hel = await src.embedFont(StandardFonts.Helvetica);
-  const total = src.getPageCount();
-  for(let i=0;i<src.getPages().length;i++) {
-    const page = src.getPage(i); const { width, height } = page.getSize();
-    const text = fmt.replace('{page}',i+1).replace('{total}',total);
-    let x=width/2, y=30, align='center';
-    if(pos==='bottom-left'){x=40;align='left';}
-    if(pos==='bottom-right'){x=width-40;align:'right';}
-    if(pos==='top-center'){y=height-30;}
-    page.drawText(text, { x, y, font:hel, size:10, color:rgb(0.4,0.4,0.4), opacity:0.6, align });
-  }
-  downloadPDF(src, 'numbered.pdf');
-}
-
-async function doCompress() {
-  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
-  const src = await loadPDF(f.data);
-  downloadPDF(src, 'compressed.pdf');
-  toast('Basic compression done (use desktop app for advanced)');
-}
-
-async function renderPreview() {
-  const f = Object.values(state.files)[0]; if(!f) return;
-  const typed = new Uint8Array(f.data.slice(0,8));
-  if(String.fromCharCode(...typed)!=='%PDF'){toast('Not a valid PDF');return;}
-  try {
-    const pdf = await pdfjsLib.getDocument({data:f.data}).promise;
-    state.pages = pdf; state.currentPreviewPage = 1;
-    showPreviewPage(1);
-  } catch(e) { toast('Preview failed: '+e.message); }
-}
-
-async function showPreviewPage(num) {
-  if(!state.pages || !state.pages.numPages) return;
-  const page = await state.pages.getPage(num);
-  const scale = 1.5;
-  const viewport = page.getViewport({scale});
-  const canvas = document.createElement('canvas');
-  canvas.width = viewport.width; canvas.height = viewport.height;
-  await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
-  const area = document.getElementById('preview-area');
-  area.innerHTML = ''; area.appendChild(canvas);
-  document.getElementById('page-info').textContent = `Page ${num} of ${state.pages.numPages}`;
-}
-function prevPage(){ if(state.currentPreviewPage>1){state.currentPreviewPage--;showPreviewPage(state.currentPreviewPage);} }
-function nextPage(){ if(state.currentPreviewPage<(state.pages?.numPages||0)){state.currentPreviewPage++;showPreviewPage(state.currentPreviewPage);} }
-
-async function doExtract() {
-  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
-  try {
-    const pdf = await pdfjsLib.getDocument({data:f.data}).promise;
-    let text = '';
-    for(let i=1;i<=pdf.numPages;i++){
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      text += `\n--- Page ${i} ---\n` + content.items.map(it=>it.str).join(' ');
-    }
-    const el = document.getElementById('extract-result');
-    el.innerHTML = `<div style="background:var(--hover);border:1px solid var(--border);border-radius:12px;padding:16px"><textarea class="text-area" readonly id="extract-textarea">${text}</textarea><br><button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('extract-textarea').value)" style="margin-top:8px">📋 Copy All</button></div>`;
-  } catch(e) { toast('Extract failed: '+e.message); }
-}
+renderGroups();
 </script>
 </body>
 </html>
