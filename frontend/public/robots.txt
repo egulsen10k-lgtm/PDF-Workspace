@@ -1,0 +1,7 @@
+# Block all crawlers
+User-agent: *
+Disallow: /
+
+# Allow search engine to crawl the home page
+# (kept minimal since this is a private local tool)
+Sitemap: https://localhost/sitemap.xml

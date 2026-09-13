@@ -1,0 +1,41 @@
+#!/bin/bash
+# Native macOS app entry. Resolves the pack root whether this .app lives
+# inside desktop/macos/ or has been copied next to the pack.
+set -e
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
+# Default: ILovePDF Personal.app/Contents/MacOS → pack root is 5 levels up
+#   .../desktop/macos/ILovePDF Personal.app/Contents/MacOS
+CANDIDATES=(
+  "$HERE/../../../../.."
+  "$HERE/../../../.."
+  "$HERE/../../.."
+  "$(dirname "$HERE")"
+)
+
+ROOT=""
+for c in "${CANDIDATES[@]}"; do
+  resolved="$(cd "$c" 2>/dev/null && pwd || true)"
+  if [ -n "$resolved" ] && [ -f "$resolved/desktop/launcher.py" ]; then
+    ROOT="$resolved"
+    break
+  fi
+done
+
+if [ -z "$ROOT" ]; then
+  osascript -e 'display alert "ILovePDF Personal" message "Could not find desktop/launcher.py. Keep this .app inside the ILovePDF pack (desktop/macos/) or next to the desktop folder." as critical'
+  exit 1
+fi
+
+cd "$ROOT"
+
+if [ -x "$ROOT/venv/bin/python" ]; then
+  PY="$ROOT/venv/bin/python"
+elif command -v python3 >/dev/null 2>&1; then
+  PY="$(command -v python3)"
+else
+  osascript -e 'display alert "ILovePDF Personal" message "Python 3 is required. Install it from python.org, then double-click again." as critical'
+  exit 1
+fi
+
+exec "$PY" "$ROOT/desktop/launcher.py"
