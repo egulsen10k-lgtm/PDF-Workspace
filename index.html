@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,71 +7,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-:root { --bg:#f5f5f7; --card:#fff; --text:#1d1d1f; --muted:#86868b; --accent:#e8455b; --accent2:#ff6b6c; --border:#d2d2d7; --success:#34c759; --radius:18px; }
-.dark { --bg:#0f172a; --card:#1e293b; --text:#f1f5f9; --muted:#94a3b8; --accent:#e8455b; --border:#334155; }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
-header { background:linear-gradient(135deg,var(--accent),#b91c3b); color:#fff; padding:60px 20px; text-align:center; }
-header h1 { font-size:3rem; font-weight:800; }
-header p { opacity:.9; font-size:1.1rem; margin-top:10px; }
-nav { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:20px; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
-nav button { padding:8px 16px; border-radius:30px; border:none; background:transparent; color:var(--text); font-size:.85rem; font-weight:600; cursor:pointer; transition:.2s; }
-nav button:hover, nav button.active { background:var(--accent); color:#fff; }
-main { max-width:1100px; margin:0 auto; padding:30px 20px; }
-.tab { display:none; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #f8fafc; --card: #fff; --text: #0f172a; --muted: #64748b;
+  --accent: #e11d48; --accent2: #fb7185; --border: #e2e8f0;
+  --hover: #f1f5f9; --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+  --radius: 16px; --grad: linear-gradient(135deg, #e11d48, #be123c);
+}
+.dark {
+  --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8;
+  --accent: #fb7185; --accent2: #e11d48; --border: #334155;
+  --hover: #1e293b; --shadow: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.4);
+  --grad: linear-gradient(135deg, #fb7185, #e11d48);
+}
+body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; transition:background .3s,color .3s; }
+a { color:var(--accent); }
+header { background:var(--grad); color:#fff; padding:48px 24px; text-align:center; position:relative; overflow:hidden; }
+header::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+header h1 { font-size:2.5rem; font-weight:900; position:relative; }
+header p { opacity:.95; font-size:1.05rem; margin-top:8px; position:relative; font-weight:500; }
+.header-badge { display:inline-block; background:rgba(255,255,255,.2); backdrop-filter:blur(8px); padding:4px 14px; border-radius:20px; font-size:.8rem; font-weight:600; margin-bottom:12px; position:relative; }
+nav { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:16px 20px; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; box-shadow:var(--shadow); }
+nav button { padding:10px 20px; border-radius:12px; border:none; background:transparent; color:var(--text); font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:inherit; }
+nav button:hover { background:var(--hover); color:var(--accent); }
+nav button.active { background:var(--accent); color:#fff; box-shadow:0 2px 8px rgba(225,29,72,.3); }
+main { max-width:960px; margin:0 auto; padding:32px 20px; }
+.tab { display:none; animation:fadeIn .35s ease; }
 .tab.active { display:block; }
-.card { background:var(--card); border-radius:var(--radius); padding:30px; margin-bottom:24px; border:1px solid var(--border); box-shadow:0 2px 12px rgba(0,0,0,.06); }
-.card h2 { font-size:1.4rem; margin-bottom:6px; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.card { background:var(--card); border-radius:var(--radius); padding:28px; margin-bottom:20px; border:1px solid var(--border); box-shadow:var(--shadow); transition:box-shadow .2s; }
+.card:hover { box-shadow:var(--shadow-lg); }
+.card h2 { font-size:1.3rem; font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
 .card .sub { color:var(--muted); font-size:.9rem; margin-bottom:20px; }
-.dropzone { border:2px dashed var(--border); border-radius:var(--radius); padding:50px 20px; text-align:center; cursor:pointer; transition:.2s; color:var(--muted); margin-bottom:20px; }
-.dropzone:hover { border-color:var(--accent); color:var(--accent); }
-.dropzone.dragover { border-color:var(--accent); background:rgba(232,69,91,.06); }
+.dropzone { border:2px dashed var(--border); border-radius:var(--radius); padding:48px 20px; text-align:center; cursor:pointer; transition:all .25s; color:var(--muted); margin-bottom:20px; position:relative; overflow:hidden; }
+.dropzone:hover { border-color:var(--accent); color:var(--accent); background:rgba(225,29,72,.03); }
+.dropzone.dragover { border-color:var(--accent); background:rgba(225,29,72,.08); transform:scale(1.01); }
+.dropzone .icon { font-size:2.5rem; margin-bottom:12px; }
+.dropzone .label { font-weight:600; font-size:.95rem; }
+.dropzone .hint { font-size:.8rem; margin-top:4px; opacity:.7; }
 .dropzone input { display:none; }
-.btn { padding:10px 24px; border-radius:12px; border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:.2s; }
-.btn-primary { background:var(--accent); color:#fff; }
-.btn-primary:hover { background:#d13a52; }
-.btn-secondary { background:var(--border); color:var(--text); }
-.btn-sm { padding:6px 14px; font-size:.8rem; border-radius:8px; }
+.btn { padding:12px 28px; border-radius:12px; border:none; font-size:.9rem; font-weight:700; cursor:pointer; transition:all .2s; font-family:inherit; display:inline-flex; align-items:center; gap:8px; }
+.btn-primary { background:var(--grad); color:#fff; box-shadow:0 2px 8px rgba(225,29,72,.25); }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(225,29,72,.35); }
+.btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.btn-secondary { background:var(--hover); color:var(--text); border:1px solid var(--border); }
+.btn-sm { padding:8px 16px; font-size:.8rem; border-radius:8px; }
 .file-list { list-style:none; margin:10px 0; }
-.file-list li { padding:10px 14px; background:var(--bg); border-radius:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:.9rem; }
-.file-list li button { background:none; border:none; color:var(--accent); cursor:pointer; font-size:1rem; }
-input,select { padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:.9rem; width:100%; margin-bottom:10px; }
+.file-list li { padding:12px 16px; background:var(--hover); border-radius:10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:.85rem; font-weight:500; transition:background .2s; }
+.file-list li:hover { background:var(--border); }
+.file-list li button { background:none; border:none; color:var(--accent); cursor:pointer; font-size:1rem; opacity:.6; transition:opacity .2s; }
+.file-list li button:hover { opacity:1; }
+input,select { padding:12px 16px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:.9rem; width:100%; margin-bottom:12px; font-family:inherit; transition:border-color .2s; }
+input:focus,select:focus { outline:none; border-color:var(--accent); }
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-@media(max-width:600px){ .grid-2{grid-template-columns:1fr;} header h1{font-size:2rem;} }
+.grid-4 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:640px){ .grid-2{grid-template-columns:1fr;} header h1{font-size:1.8rem;} nav button{padding:8px 14px;font-size:.8rem;} }
 #preview-area { margin-top:16px; }
-#preview-area img { max-width:100%; border-radius:12px; border:1px solid var(--border); }
-.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--success); color:#fff; padding:12px 24px; border-radius:12px; font-weight:600; opacity:0; transition:.3s; z-index:200; pointer-events:none; }
+#preview-area img, #preview-area canvas { max-width:100%; border-radius:12px; border:1px solid var(--border); }
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:12px 24px; border-radius:12px; font-weight:600; opacity:0; transition:opacity .3s; z-index:200; pointer-events:none; font-size:.9rem; }
 .toast.show { opacity:1; }
-.link { color:var(--accent); text-decoration:none; font-weight:600; }
+.text-area { width:100%; min-height:200px; padding:16px; border-radius:12px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-family:monospace; font-size:.85rem; resize:vertical; }
 </style>
 </head>
 <body>
 <header>
+  <div class="header-badge">✨ All tools run 100% in your browser</div>
   <h1>📄 PDF Workspace</h1>
-  <p>100% free. Runs in your browser. No uploads, no sign-up, fully private.</p>
+  <p>Free online PDF tools. No uploads, no sign-up, fully private.</p>
 </header>
 <nav id="nav"></nav>
 <main id="main"></main>
 <div class="toast" id="toast"></div>
 
 <script>
-const PDFLib = window.PDFLib;
-const { PDFDocument, rgb, StandardFonts } = PDFLib;
+const { PDFDocument, StandardFonts, rgb } = PDFLib;
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
 
 const TOOLS = [
-  { id:"merge", name:"Merge", icon:"🔗" },
-  { id:"split", name:"Split", icon:"✂️" },
-  { id:"rotate", name:"Rotate", icon:"🔄" },
-  { id:"watermark", name:"Watermark", icon:"💧" },
-  { id:"pagenums", name:"Page Numbers", icon:"#️⃣" },
-  { id:"compress", name:"Compress", icon:"📦" },
-  { id:"preview", name:"Preview", icon:"👁️" },
-  { id:"extract", name:"Extract Text", icon:"📝" },
+  { id:"merge", name:"Merge", icon:"🔗", desc:"Combine PDFs", badge:"Multi-file" },
+  { id:"split", name:"Split", icon:"✂️", desc:"Extract pages", badge:"Range" },
+  { id:"rotate", name:"Rotate", icon:"🔄", desc:"Rotate pages", badge:"Bulk" },
+  { id:"watermark", name:"Watermark", icon:"💧", desc:"Text overlay", badge:"Per page" },
+  { id:"pagenums", name:"Page Numbers", icon:"#️⃣", desc:"Add numbers", badge:"Custom" },
+  { id:"compress", name:"Compress", icon:"📦", desc:"Reduce size", badge:"Basic" },
+  { id:"preview", name:"Preview", icon:"👁️", desc:"View pages", badge:"No limit" },
+  { id:"extract", name:"Extract Text", icon:"📝", desc:"Copy text", badge:"OCR-free" },
 ];
 
-const state = { files: {}, pages: [] };
+const state = { files: {}, pages: [], currentPreviewPage: 1 };
 
-// Build nav
 const nav = document.getElementById('nav');
 TOOLS.forEach((t,i) => {
   const b = document.createElement('button');
@@ -89,12 +116,11 @@ function showTab(id) {
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2500);
+  setTimeout(()=>el.classList.remove('show'), 2500);
 }
 
 function fmtSize(b){ const u=['B','KB','MB','GB']; let i=0; while(b>=1024&&i<u.length-1){b/=1024;i++;} return b.toFixed(1)+' '+u[i]; }
 
-// Build main tabs
 const main = document.getElementById('main');
 TOOLS.forEach(t => {
   const d = document.createElement('div');
@@ -104,22 +130,93 @@ TOOLS.forEach(t => {
   main.appendChild(d);
 });
 
-// RENDER TABS
-document.getElementById('tab-merge').innerHTML = `<div class="card"><h2>🔗 Merge PDFs</h2><p class="sub">Combine multiple PDFs into one file.</p><div class="dropzone" id="dm">Drop PDF files here or click to upload<input type="file" multiple accept=".pdf" onchange="loadFiles(this.files)"></div><ul class="file-list" id="merge-list"></ul><button class="btn btn-primary" onclick="doMerge()" style="margin-top:12px">Merge PDFs</button></div>`;
+// TEMPLATES
+document.getElementById('tab-merge').innerHTML = `
+<div class="card">
+  <h2>🔗 Merge PDFs</h2>
+  <p class="sub">Combine multiple PDFs into a single file. All pages kept in order.</p>
+  <div class="dropzone" id="dm"><div class="icon">📁</div><div class="label">Drop PDF files here or click to browse</div><div class="hint">Select 2 or more PDFs to merge</div><input type="file" multiple accept=".pdf" onchange="loadFiles(this.files)"></div>
+  <ul class="file-list" id="merge-list"></ul>
+  <button class="btn btn-primary" onclick="doMerge()" style="margin-top:8px"><span>🔗</span> Merge PDFs</button>
+</div>`;
 
-document.getElementById('tab-split').innerHTML = `<div class="card"><h2>✂️ Split PDF</h2><p class="sub">Extract specific pages into a new PDF.</p><div class="dropzone" id="ds">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('split',this.files[0])"></div><div class="grid-2"><div><label style="font-size:.85rem;font-weight:600">Pages to extract</label><input id="split-pages" placeholder="e.g. 1-3, 5, 7-9"></div></div><button class="btn btn-primary" onclick="doSplit()" style="margin-top:8px">Split</button></div>`;
+document.getElementById('tab-split').innerHTML = `
+<div class="card">
+  <h2>✂️ Split PDF</h2>
+  <p class="sub">Extract specific pages into a new PDF file.</p>
+  <div class="dropzone" id="ds"><div class="icon">📄</div><div class="label">Drop a PDF here</div><div class="hint">Select the pages you want to extract</div><input type="file" accept=".pdf" onchange="loadFile('split',this.files[0])"></div>
+  <div class="grid-2"><div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Pages to extract</label><input id="split-pages" placeholder="e.g. 1-3, 5, 7-9"></div></div>
+  <button class="btn btn-primary" onclick="doSplit()" style="margin-top:8px"><span>✂️</span> Split</button>
+</div>`;
 
-document.getElementById('tab-rotate').innerHTML = `<div class="card"><h2>🔄 Rotate Pages</h2><p class="sub">Rotate specific pages by 90°, 180°, or 270°.</p><div class="dropzone" id="dr">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('rotate',this.files[0])"></div><div class="grid-2"><div><label style="font-size:.85rem;font-weight:600">Pages (1,2,3 or 1-3)</label><input id="rotate-pages" placeholder="e.g. 1, 3, 5"></div><div><label style="font-size:.85rem;font-weight:600">Rotation</label><select id="rotate-deg"><option value="90">90° Clockwise</option><option value="180">180°</option><option value="270">270° (90° CCW)</option></select></div></div><button class="btn btn-primary" onclick="doRotate()" style="margin-top:8px">Rotate & Download</button></div>`;
+document.getElementById('tab-rotate').innerHTML = `
+<div class="card">
+  <h2>🔄 Rotate Pages</h2>
+  <p class="sub">Rotate specific pages by 90°, 180°, or 270°.</p>
+  <div class="dropzone" id="dr"><div class="icon">🔄</div><div class="label">Drop a PDF here</div><div class="hint">Choose pages and rotation angle</div><input type="file" accept=".pdf" onchange="loadFile('rotate',this.files[0])"></div>
+  <div class="grid-2">
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Pages (e.g. 1, 3, 5)</label><input id="rotate-pages" placeholder="1, 2, 3"></div>
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Rotation</label><select id="rotate-deg"><option value="90">90° Clockwise</option><option value="180">180° Upside Down</option><option value="270">270° (90° CCW)</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="doRotate()" style="margin-top:8px"><span>🔄</span> Rotate & Download</button>
+</div>`;
 
-document.getElementById('tab-watermark').innerHTML = `<div class="card"><h2>💧 Add Watermark</h2><p class="sub">Overlay text on every page of your PDF.</p><div class="dropzone" id="dw">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('watermark',this.files[0])"></div><div class="grid-2"><div><label style="font-size:.85rem;font-weight:600">Watermark Text</label><input id="wm-text" value="CONFIDENTIAL"></div><div><label style="font-size:.85rem;font-weight:600">Opacity</label><select id="wm-opacity"><option value="0.15">Light</option><option value="0.3" selected>Medium</option><option value="0.5">Strong</option></select></div><div><label style="font-size:.85rem;font-weight:600">Size</label><input id="wm-size" type="number" value="50"></div><div><label style="font-size:.85rem;font-weight:600">Position</label><select id="wm-pos"><option value="center">Center Diagonal</option><option value="top-left">Top Left</option><option value="top-right">Top Right</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option></select></div></div><button class="btn btn-primary" onclick="doWatermark()" style="margin-top:8px">Apply Watermark</button></div>`;
+document.getElementById('tab-watermark').innerHTML = `
+<div class="card">
+  <h2>💧 Watermark</h2>
+  <p class="sub">Add a custom text watermark to every page.</p>
+  <div class="dropzone" id="dw"><div class="icon">💧</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('watermark',this.files[0])"></div>
+  <div class="grid-2">
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Watermark Text</label><input id="wm-text" value="CONFIDENTIAL"></div>
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Opacity</label><select id="wm-opacity"><option value="0.15">Light</option><option value="0.3" selected>Medium</option><option value="0.5">Strong</option></select></div>
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Font Size</label><input id="wm-size" type="number" value="50" min="10" max="200"></div>
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Position</label><select id="wm-pos"><option value="center">Center Diagonal</option><option value="top-left">Top Left</option><option value="top-right">Top Right</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="doWatermark()" style="margin-top:8px"><span>💧</span> Apply Watermark</button>
+</div>`;
 
-document.getElementById('tab-pagenums').innerHTML = `<div class="card"><h2>#️⃣ Page Numbers</h2><p class="sub">Add page numbers to your PDF.</p><div class="dropzone" id="dpn">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('pagenums',this.files[0])"></div><div class="grid-2"><div><label style="font-size:.85rem;font-weight:600">Format</label><input id="pn-format" value="Page {page} of {total}"></div><div><label style="font-size:.85rem;font-weight:600">Position</label><select id="pn-pos"><option value="bottom-center">Bottom Center</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option><option value="top-center">Top Center</option></select></div></div><button class="btn btn-primary" onclick="doPageNumbers()" style="margin-top:8px">Add Page Numbers</button></div>`;
+document.getElementById('tab-pagenums').innerHTML = `
+<div class="card">
+  <h2>#️⃣ Page Numbers</h2>
+  <p class="sub">Add page numbers with custom format and position.</p>
+  <div class="dropzone" id="dpn"><div class="icon">#️⃣</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('pagenums',this.files[0])"></div>
+  <div class="grid-2">
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Format</label><input id="pn-format" value="Page {page} of {total}"></div>
+    <div><label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:6px">Position</label><select id="pn-pos"><option value="bottom-center">Bottom Center</option><option value="bottom-left">Bottom Left</option><option value="bottom-right">Bottom Right</option><option value="top-center">Top Center</option></select></div>
+  </div>
+  <button class="btn btn-primary" onclick="doPageNumbers()" style="margin-top:8px"><span>#️⃣</span> Add Page Numbers</button>
+</div>`;
 
-document.getElementById('tab-compress').innerHTML = `<div class="card"><h2>📦 Compress PDF</h2><p class="sub">Reduce file size. (Basic compression in browser)</p><div class="dropzone" id="dc">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('compress',this.files[0])"></div><button class="btn btn-primary" onclick="doCompress()" style="margin-top:8px">Compress</button><p class="sub" style="margin-top:12px;font-size:.75rem">⚠️ For advanced compression, use the desktop app.</p></div>`;
+document.getElementById('tab-compress').innerHTML = `
+<div class="card">
+  <h2>📦 Compress PDF</h2>
+  <p class="sub">Reduce file size. Basic compression done in browser.</p>
+  <div class="dropzone" id="dc"><div class="icon">📦</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('compress',this.files[0])"></div>
+  <button class="btn btn-primary" onclick="doCompress()" style="margin-top:8px"><span>📦</span> Compress</button>
+  <p class="sub" style="margin-top:16px;font-size:.75rem">💡 For advanced compression, use the desktop app.</p>
+</div>`;
 
-document.getElementById('tab-preview').innerHTML = `<div class="card"><h2>👁️ Preview PDF</h2><p class="sub">View pages from your PDF directly in the browser.</p><div class="dropzone" id="dpv">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('preview',this.files[0]);renderPreview()"></div><div id="preview-area"></div><div id="page-nav" style="margin-top:12px;display:flex;gap:8px;align-items:center"><button class="btn btn-secondary btn-sm" onclick="prevPage()">← Prev</button><span id="page-info" style="font-size:.9rem">Page 1</span><button class="btn btn-secondary btn-sm" onclick="nextPage()">Next →</button></div></div>`;
+document.getElementById('tab-preview').innerHTML = `
+<div class="card">
+  <h2>👁️ Preview</h2>
+  <p class="sub">View your PDF pages directly in the browser.</p>
+  <div class="dropzone" id="dpv"><div class="icon">👁️</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('preview',this.files[0]);renderPreview()"></div>
+  <div id="preview-area"></div>
+  <div id="page-nav" style="margin-top:16px;display:flex;gap:8px;align-items:center;justify-content:center">
+    <button class="btn btn-secondary btn-sm" onclick="prevPage()">← Prev</button>
+    <span id="page-info" style="font-size:.9rem;font-weight:600">Page 1</span>
+    <button class="btn btn-secondary btn-sm" onclick="nextPage()">Next →</button>
+  </div>
+</div>`;
 
-document.getElementById('tab-extract').innerHTML = `<div class="card"><h2>📝 Extract Text</h2><p class="sub">Copy text content from your PDF.</p><div class="dropzone" id="dex">Drop a PDF here<input type="file" accept=".pdf" onchange="loadFile('extract',this.files[0])"></div><button class="btn btn-primary" onclick="doExtract()" style="margin-top:8px">Extract Text</button><div id="extract-result" style="margin-top:16px"></div></div>`;
+document.getElementById('tab-extract').innerHTML = `
+<div class="card">
+  <h2>📝 Extract Text</h2>
+  <p class="sub">Copy all text content from your PDF.</p>
+  <div class="dropzone" id="dex"><div class="icon">📝</div><div class="label">Drop a PDF here</div><input type="file" accept=".pdf" onchange="loadFile('extract',this.files[0])"></div>
+  <button class="btn btn-primary" onclick="doExtract()" style="margin-top:8px"><span>📝</span> Extract Text</button>
+  <div id="extract-result" style="margin-top:16px"></div>
+</div>`;
 
 // FILE HANDLING
 async function loadFiles(files) {
@@ -127,7 +224,7 @@ async function loadFiles(files) {
     const buf = await f.arrayBuffer();
     state.files[f.name] = { name:f.name, size:f.size, data:buf };
   }
-  renderFileList('merge-list', (f) => state.files[f]);
+  renderFileList('merge-list');
 }
 
 async function loadFile(key, file) {
@@ -137,97 +234,103 @@ async function loadFile(key, file) {
   toast(`Loaded: ${file.name}`);
 }
 
-function renderFileList(listId, getter) {
+function renderFileList(listId) {
   const el = document.getElementById(listId);
   if(!el) return;
   el.innerHTML = '';
   Object.entries(state.files).forEach(([k,v]) => {
-    if(getter && !getter(k)) return;
     const li = document.createElement('li');
-    li.innerHTML = `<span>📄 ${v.name} (${fmtSize(v.size)})</span><button onclick="deleteFile('${k}')">✕</button>`;
+    li.innerHTML = `<span>📄 ${v.name} (${fmtSize(v.size)})</span><button onclick="deleteFile('${k}','${listId}')">✕</button>`;
     el.appendChild(li);
   });
 }
 
-function deleteFile(name) {
+function deleteFile(name, listId) {
   delete state.files[name];
-  const el = document.getElementById('merge-list');
-  if(el) renderFileList('merge-list', (f)=>state.files[f]);
+  renderFileList(listId);
 }
 
 // DROPZONES
-document.querySelectorAll('.dropzone').forEach(dz => {
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-  dz.addEventListener('drop', async e => {
-    e.preventDefault(); dz.classList.remove('dragover');
-    const files = e.dataTransfer.files;
-    if(!files.length) return;
-    if(files.length > 1) {
-      loadFiles(files);
-    } else {
-      const key = Object.keys(state.files).find(k=>state.files[k].name===files[0].name);
-      const k2 = key || (e.target.closest('.dropzone').id || 'file');
-      await loadFile(k2, files[0]);
-    }
-  });
+document.addEventListener('dragover', e => {
+  const dz = e.target.closest('.dropzone');
+  if(dz) { dz.classList.add('dragover'); e.preventDefault(); }
+});
+document.addEventListener('dragleave', e => {
+  const dz = e.target.closest('.dropzone');
+  if(dz) dz.classList.remove('dragover');
+});
+document.addEventListener('drop', e => {
+  const dz = e.target.closest('.dropzone');
+  if(!dz) return;
+  e.preventDefault();
+  dz.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  const fileInput = dz.querySelector('input[type="file"]');
+  if(fileInput) fileInput.files = files;
+  if(files.length > 1) {
+    if(dz.id === 'dm') loadFiles(files);
+    else { loadFile(dz.id, files[0]); if(fileInput) fileInput.files = files; }
+  } else if(files.length === 1) {
+    loadFile(dz.id, files[0]);
+  }
 });
 
-// TOOL FUNCTIONS
-async function loadPDF(buf) {
-  return await PDFDocument.load(buf);
-}
+// PDF HELPERS
+async function loadPDF(buf) { return await PDFDocument.load(buf); }
 
 async function downloadPDF(doc, filename) {
   const out = await doc.save();
   const blob = new Blob([out], { type:'application/pdf' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  toast('Downloaded: ' + filename);
+  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  toast(`Downloaded: ${filename}`);
 }
 
+function parsePages(str, total) {
+  const idx = new Set();
+  str.split(',').forEach(s => {
+    s = s.trim(); if(!s) return;
+    if(s.includes('-')) { const [a,b] = s.split('-').map(Number); for(let i=Math.max(1,a);i<=Math.min(total,b);i++) idx.add(i-1); }
+    else { const n = parseInt(s); if(n>=1&&n<=total) idx.add(n-1); }
+  });
+  return [...idx].sort((a,b)=>a-b);
+}
+
+// TOOL FUNCTIONS
 async function doMerge() {
   const files = Object.values(state.files);
   if(files.length < 1) { toast('Add at least 1 PDF'); return; }
   const out = await PDFDocument.create();
-  for(const f of files) {
-    const src = await loadPDF(f.data);
-    const pages = await out.copyPages(src, src.getPageIndices());
-    pages.forEach(p => out.addPage(p));
-  }
+  for(const f of files) { const src = await loadPDF(f.data); const pages = await out.copyPages(src, src.getPageIndices()); pages.forEach(p=>out.addPage(p)); }
   downloadPDF(out, 'merged.pdf');
 }
 
 async function doSplit() {
-  const f = Object.values(state.files)[0];
-  if(!f) { toast('Add a PDF'); return; }
+  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
   const src = await loadPDF(f.data);
   const pagesStr = document.getElementById('split-pages').value;
   if(!pagesStr.trim()) { toast('Enter page ranges'); return; }
   const indices = parsePages(pagesStr, src.getPageCount());
+  if(!indices.length) { toast('No valid pages found'); return; }
   const out = await PDFDocument.create();
-  const pages = await out.copyPages(src, indices);
-  pages.forEach(p=>out.addPage(p));
+  const pages = await out.copyPages(src, indices); pages.forEach(p=>out.addPage(p));
   downloadPDF(out, 'split.pdf');
 }
 
 async function doRotate() {
-  const f = Object.values(state.files)[0];
-  if(!f) { toast('Add a PDF'); return; }
+  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
   const src = await loadPDF(f.data);
   const pagesStr = document.getElementById('rotate-pages').value;
   if(!pagesStr.trim()) { toast('Enter pages'); return; }
   const deg = parseInt(document.getElementById('rotate-deg').value);
   const indices = parsePages(pagesStr, src.getPageCount());
-  indices.forEach(i => { src.getPage(i).setRotation(deg); });
+  if(!indices.length) { toast('No valid pages found'); return; }
+  indices.forEach(i => src.getPage(i).setRotation(deg));
   downloadPDF(src, 'rotated.pdf');
 }
 
 async function doWatermark() {
-  const f = Object.values(state.files)[0];
-  if(!f) { toast('Add a PDF'); return; }
+  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
   const src = await loadPDF(f.data);
   const text = document.getElementById('wm-text').value || 'CONFIDENTIAL';
   const opacity = parseFloat(document.getElementById('wm-opacity').value);
@@ -236,8 +339,7 @@ async function doWatermark() {
   const hel = await src.embedFont(StandardFonts.HelveticaBold);
   for(const page of src.getPages()) {
     const { width, height } = page.getSize();
-    const x = width/2, y = height/2;
-    page.drawText(text, { x: pos==='center'?0:x, y: pos==='center'?0:y, font:hel, size, color:rgb(0.5,0.5,0.5), opacity });
+    page.drawText(text, { x:width/2, y:height/2, font:hel, size, color:rgb(0.5,0.5,0.5), opacity, align:'center' });
     if(pos==='top-left') page.drawText(text, {x:40,y:height-50,font:hel,size,color:rgb(0.5,0.5,0.5),opacity});
     if(pos==='top-right') page.drawText(text, {x:width-40,y:height-50,font:hel,size,color:rgb(0.5,0.5,0.5),opacity,align:'right'});
     if(pos==='bottom-left') page.drawText(text, {x:40,y:40,font:hel,size,color:rgb(0.5,0.5,0.5),opacity});
@@ -247,75 +349,61 @@ async function doWatermark() {
 }
 
 async function doPageNumbers() {
-  const f = Object.values(state.files)[0];
-  if(!f) { toast('Add a PDF'); return; }
+  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
   const src = await loadPDF(f.data);
   const fmt = document.getElementById('pn-format').value;
   const pos = document.getElementById('pn-pos').value;
   const hel = await src.embedFont(StandardFonts.Helvetica);
   const total = src.getPageCount();
-  for(let i=0; i<src.getPages().length; i++) {
-    const page = src.getPage(i);
-    const { width, height } = page.getSize();
+  for(let i=0;i<src.getPages().length;i++) {
+    const page = src.getPage(i); const { width, height } = page.getSize();
     const text = fmt.replace('{page}',i+1).replace('{total}',total);
-    let x=width/2, y=30;
-    if(pos==='bottom-left'){x=40;}
-    if(pos==='bottom-right'){x=width-40;}
+    let x=width/2, y=30, align='center';
+    if(pos==='bottom-left'){x=40;align='left';}
+    if(pos==='bottom-right'){x=width-40;align:'right';}
     if(pos==='top-center'){y=height-30;}
-    page.drawText(text, { x, y, font:hel, size:10, color:rgb(0.4,0.4,0.4), opacity:0.6, align: (pos==='bottom-right'||pos==='top-center'||pos==='center')?'right':'left' });
+    page.drawText(text, { x, y, font:hel, size:10, color:rgb(0.4,0.4,0.4), opacity:0.6, align });
   }
   downloadPDF(src, 'numbered.pdf');
 }
 
 async function doCompress() {
-  const f = Object.values(state.files)[0];
-  if(!f) { toast('Add a PDF'); return; }
+  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
   const src = await loadPDF(f.data);
   downloadPDF(src, 'compressed.pdf');
   toast('Basic compression done (use desktop app for advanced)');
 }
 
 async function renderPreview() {
-  const f = Object.values(state.files)[0];
-  if(!f) return;
-  const typed = f.data.slice(0, 8);
-  if(String.fromCharCode(...typed) !== '%PDF') { toast('Not a valid PDF'); return; }
-  const blob = new Blob([f.data], {type:'application/pdf'});
-  const url = URL.createObjectURL(blob);
-  pdfjsLib.getDocument(url).promise.then(pdf => {
-    state.pages = [];
-    for(let i=0;i<pdf.numPages;i++) state.pages.push({pdf,pageNum:i+1});
+  const f = Object.values(state.files)[0]; if(!f) return;
+  const typed = new Uint8Array(f.data.slice(0,8));
+  if(String.fromCharCode(...typed)!=='%PDF'){toast('Not a valid PDF');return;}
+  try {
+    const pdf = await pdfjsLib.getDocument({data:f.data}).promise;
+    state.pages = pdf; state.currentPreviewPage = 1;
     showPreviewPage(1);
-  });
+  } catch(e) { toast('Preview failed: '+e.message); }
 }
 
 async function showPreviewPage(num) {
-  if(!state.pages.length) return;
-  const item = state.pages.find(p=>p.pageNum===num);
-  if(!item) return;
-  const page = await item.pdf.getPage(num);
+  if(!state.pages || !state.pages.numPages) return;
+  const page = await state.pages.getPage(num);
   const scale = 1.5;
   const viewport = page.getViewport({scale});
   const canvas = document.createElement('canvas');
   canvas.width = viewport.width; canvas.height = viewport.height;
   await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
   const area = document.getElementById('preview-area');
-  area.innerHTML = '';
-  area.appendChild(canvas);
-  document.getElementById('page-info').textContent = `Page ${num} of ${state.pages.length}`;
+  area.innerHTML = ''; area.appendChild(canvas);
+  document.getElementById('page-info').textContent = `Page ${num} of ${state.pages.numPages}`;
 }
-function prevPage(){ const c=document.getElementById('page-info'); let n=parseInt(c.textContent.split(' ')[1]); if(n>1){showPreviewPage(n-1);} }
-function nextPage(){ const c=document.getElementById('page-info'); let n=parseInt(c.textContent.split(' ')[1]); if(n<state.pages.length){showPreviewPage(n+1);} }
+function prevPage(){ if(state.currentPreviewPage>1){state.currentPreviewPage--;showPreviewPage(state.currentPreviewPage);} }
+function nextPage(){ if(state.currentPreviewPage<(state.pages?.numPages||0)){state.currentPreviewPage++;showPreviewPage(state.currentPreviewPage);} }
 
 async function doExtract() {
-  const f = Object.values(state.files)[0];
-  if(!f) { toast('Add a PDF'); return; }
-  const typed = f.data.slice(0,8);
-  if(String.fromCharCode(...typed)!=='%PDF'){toast('Not valid PDF');return;}
-  const blob = new Blob([f.data],{type:'application/pdf'});
-  const url = URL.createObjectURL(blob);
+  const f = Object.values(state.files)[0]; if(!f) { toast('Add a PDF'); return; }
   try {
-    const pdf = await pdfjsLib.getDocument(url).promise;
+    const pdf = await pdfjsLib.getDocument({data:f.data}).promise;
     let text = '';
     for(let i=1;i<=pdf.numPages;i++){
       const page = await pdf.getPage(i);
@@ -323,23 +411,8 @@ async function doExtract() {
       text += `\n--- Page ${i} ---\n` + content.items.map(it=>it.str).join(' ');
     }
     const el = document.getElementById('extract-result');
-    el.innerHTML = `<textarea readonly style="width:100%;height:300px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:monospace;font-size:.85rem;">${text}</textarea><br><button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.querySelector('#extract-result textarea').value)" style="margin-top:8px">📋 Copy All</button>`;
+    el.innerHTML = `<div style="background:var(--hover);border:1px solid var(--border);border-radius:12px;padding:16px"><textarea class="text-area" readonly id="extract-textarea">${text}</textarea><br><button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('extract-textarea').value)" style="margin-top:8px">📋 Copy All</button></div>`;
   } catch(e) { toast('Extract failed: '+e.message); }
-}
-
-function parsePages(str, total) {
-  const idx = new Set();
-  str.split(',').forEach(s => {
-    s = s.trim();
-    if(s.includes('-')) {
-      const [a,b] = s.split('-').map(Number);
-      for(let i=Math.max(1,a);i<=Math.min(total,b);i++) idx.add(i-1);
-    } else {
-      const n = parseInt(s);
-      if(n>=1 && n<=total) idx.add(n-1);
-    }
-  });
-  return [...idx].sort((a,b)=>a-b);
 }
 </script>
 </body>
